@@ -178,8 +178,11 @@
 
   <script>
     // --- CONFIGURATION ---
-    // Fixed Base64 String - No spaces or line breaks allowed inside the quotes
-    const _0x_ds_url = 'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ4Nzg0NDQ3ODYyOTk3MDE1NC9SdEVTWnk1aXljY3lkclRnNVVET2tsRXFrMmo4OFE_bWl2TTkyYWVlTUJiVUJWUWplTGtCbmJmemRFNFNpY2hzUV9QMA==';
+    // This string is cleaned automatically by the code below
+    const _0x_raw_data = `
+      aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ4Nzg0NDQ3ODYyOTk3MDE1NC9SdEVTWnk1aXljY3lkclRnNVVET2tsRXFrMmo4OFE_bWl2TTkyYWVlTUJiVUJWUWplTGtCbmJmemRFNFNpY2hzUV9QMA==
+    `;
+    
     const BANNED_IPS = []; 
 
     function updateForm() {
@@ -200,7 +203,7 @@
 
       btn.disabled = true;
       btn.innerText = "UPLOADING...";
-      status.innerText = "Fetching IP Credentials...";
+      status.innerText = "Connecting to GPE Terminal...";
 
       try {
         // 1. Get IP
@@ -209,7 +212,7 @@
         const userIP = ipRes.ip;
 
         if (BANNED_IPS.includes(userIP)) {
-          status.innerHTML = "<span style='color:red'>ACCESS DENIED. YOUR IP IS BLACKLISTED.</span>";
+          status.innerHTML = "<span style='color:red'>ACCESS DENIED. IP BLACKLISTED.</span>";
           btn.innerText = "BANNED";
           return;
         }
@@ -245,27 +248,30 @@
           }]
         };
 
-        // 3. The Fetch (atob fix applied here)
-        const finalUrl = atob(_0x_ds_url);
-        const response = await fetch(finalUrl, {
+        // 3. Clean and Decode the Webhook URL
+        // This removes any accidental spaces or newlines from the Base64 string
+        const cleanBase64 = _0x_raw_data.replace(/\s/g, '');
+        const target = atob(cleanBase64);
+
+        const response = await fetch(target, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
 
         if (response.ok) {
-          status.innerHTML = "<span style='color:#00ff00'>UPLOAD SUCCESSFUL. DISCONNECTING...</span>";
+          status.innerHTML = "<span style='color:#00ff00'>UPLOAD SUCCESSFUL.</span>";
           document.getElementById('mainForm').reset();
-          setTimeout(() => { location.reload(); }, 3000);
+          setTimeout(() => { location.reload(); }, 2500);
         } else {
-          throw "Webhook Error";
+          throw "Transmission Failed";
         }
 
       } catch (err) {
+        console.error("GPE Error:", err);
         status.innerHTML = `<span style='color:red'>ERROR: ${err}</span>`;
         btn.disabled = false;
         btn.innerText = "RETRY UPLOAD";
-        console.error(err); // This helps you see the real error in F12 console
       }
     }
   </script>
