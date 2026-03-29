@@ -178,8 +178,8 @@
 
   <script>
     // --- CONFIGURATION ---
-    // This is your webhook URL encoded in Base64
-    const _0xGPE = 'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ4Nzg0NDQ3ODYyOTk3MDE1NC9SdEVTWnk1aXljY3lkclRnNVVET2tsRXFrMmo4OFE_bWl2TTkyYWVlTUJiVUJWUWplTGtCbmJmemRFNFNpY2hzUV9QMA==';
+    // Fixed Base64 String - No spaces or line breaks allowed inside the quotes
+    const _0x_ds_url = 'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ4Nzg0NDQ3ODYyOTk3MDE1NC9SdEVTWnk1aXljY3lkclRnNVVET2tsRXFrMmo4OFE_bWl2TTkyYWVlTUJiVUJWUWplTGtCbmJmemRFNFNpY2hzUV9QMA==';
     const BANNED_IPS = []; 
 
     function updateForm() {
@@ -203,6 +203,7 @@
       status.innerText = "Fetching IP Credentials...";
 
       try {
+        // 1. Get IP
         const ipReq = await fetch('https://api.ipify.org?format=json');
         const ipRes = await ipReq.json();
         const userIP = ipRes.ip;
@@ -213,6 +214,7 @@
           return;
         }
 
+        // 2. Build Payload
         let fields = [{ name: "UPLOADER IP", value: `\`${userIP}\``, inline: false }];
 
         if (type === 'story') {
@@ -243,8 +245,9 @@
           }]
         };
 
-        // Decode the URL at the last possible second
-        const response = await fetch(atob(_0xGPE), {
+        // 3. The Fetch (atob fix applied here)
+        const finalUrl = atob(_0x_ds_url);
+        const response = await fetch(finalUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -262,6 +265,7 @@
         status.innerHTML = `<span style='color:red'>ERROR: ${err}</span>`;
         btn.disabled = false;
         btn.innerText = "RETRY UPLOAD";
+        console.error(err); // This helps you see the real error in F12 console
       }
     }
   </script>
