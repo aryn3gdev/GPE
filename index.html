@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Great Park Exploration</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-content">
+      <h1 data-text="Great Park Explorations">Great Park Explorations</h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="map.html">Map</a>
+        <a href="stories.html">Stories</a>
+        <a href="submit.html">Submit</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <main>
+    <p class="maintxt">
+      GPE, short for Great Park Explorations, is a website based on creepy and unsettling encounters centered around Newcastle Great Park, in Gosforth.
+    </p>
+
+    <p class="maintxt">
+      The locations, images, information & stories are community-submitted and require approval from the founder. You can submit a story or location 
+      <a href="submit.html"><button class="maintxtb">here</button></a>. Inputting fake or extremely disturbing stories or locations will result in an IP ban from submitting, which can be appealed 
+      <a href="https://discord.gg/"><button class="maintxtb">here in our Discord</button></a>.
+    </p>
+
+    <p class="maintxt">
+      All submissions are monitored and may be reported to authorities if they involve illegal activity, threats, or unsafe behavior. GPE promotes curiosity and exploration, but safety and legality come first.
+    </p>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; <a href="https://discord.gg/" target="_blank">GPE 2026</a></p>
+  </footer>
+
+  <!-- JS for background slideshow -->
+<script>
+  const imgFolder = 'BackImg';
+  let images = [];
+  let currentIndex = 0;
+
+  // Add the overlay for readability
+  const overlay = document.createElement('div');
+  overlay.classList.add('bg-overlay');
+  document.body.appendChild(overlay);
+
+  // Function to load images one by one to prevent 404 terminal spam
+  function loadNextImage(index) {
+    const img = new Image();
+    img.src = `${imgFolder}/${index}.jpg`;
+
+    img.onload = () => {
+      // Image exists! Add to our list
+      images.push(img.src);
+
+      // Create the DOM element
+      const imgEl = document.createElement('img');
+      imgEl.src = img.src;
+      imgEl.classList.add('bg-img');
+      imgEl.style.opacity = (index === 1) ? '1' : '0'; // Only show the first one initially
+      imgEl.style.transform = 'scale(1.05)';
+      
+      // We'll use absolute positioning in CSS, but let's append it now
+      document.body.appendChild(imgEl);
+
+      // If this is the very first image, start the slideshow timer
+      if (index === 1) {
+        initSlideshow();
+      }
+
+      // Recursively try to load the NEXT image
+      loadNextImage(index + 1);
+    };
+
+    img.onerror = () => {
+      // The moment we hit a 404 (e.g., 3.jpg doesn't exist), we silently stop the loop.
+      console.log(`Finished loading. Total background images found: ${index - 1}`);
+    };
+  }
+
+  // Kick off the loading process starting at 1.jpg
+  loadNextImage(1);
+
+  // Slideshow logic (changing every 10 seconds)
+  function initSlideshow() {
+    setInterval(() => {
+      // Need at least 2 images to actually slide
+      if (images.length <= 1) return; 
+
+      const bgImgs = document.querySelectorAll('.bg-img');
+
+      // Fade out current image
+      bgImgs[currentIndex].style.opacity = '0';
+
+      // Calculate next index (loops back to 0 when it hits the end)
+      currentIndex = (currentIndex + 1) % images.length;
+
+      // Fade in next image
+      bgImgs[currentIndex].style.opacity = '1';
+    }, 10000); 
+  }
+</script>
+
+</body>
+</html>
