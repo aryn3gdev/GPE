@@ -1,0 +1,196 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  font-family: 'Roboto', sans-serif;
+  background: transparent; /* Keep this transparent to see images */
+  color: #fff; /* Changed to white for better visibility */
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+/* Topbar */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Darker, blurred glass effect */
+  background: rgba(0, 0, 0, 0.6); 
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.topbar h1 {
+  position: relative;
+  color: #fff;
+  font-family: monospace;
+  letter-spacing: 2px;
+}
+
+/* Creating the glitch layers */
+.topbar h1::before,
+.topbar h1::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.topbar h1::before {
+  left: 2px;
+  text-shadow: -2px 0 #ff4d4d;
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+.topbar h1::after {
+  left: -2px;
+  text-shadow: -2px 0 #007bff;
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim2 5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+  0% { clip: rect(31px, 9999px, 94px, 0); }
+  20% { clip: rect(62px, 9999px, 42px, 0); }
+  40% { clip: rect(16px, 9999px, 78px, 0); }
+  60% { clip: rect(1px, 9999px, 13px, 0); }
+  80% { clip: rect(87px, 9999px, 5px, 0); }
+  100% { clip: rect(23px, 9999px, 98px, 0); }
+}
+
+@keyframes glitch-anim2 {
+  0% { clip: rect(65px, 9999px, 100px, 0); }
+  20% { clip: rect(30px, 9999px, 15px, 0); }
+  40% { clip: rect(11px, 9999px, 45px, 0); }
+  60% { clip: rect(82px, 9999px, 92px, 0); }
+  80% { clip: rect(40px, 9999px, 55px, 0); }
+  100% { clip: rect(7px, 9999px, 20px, 0); }
+}
+
+.topbar nav a {
+  color: #ccc;
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.topbar nav a:hover {
+  color: #ff4d4d; /* A subtle blood-red or alert-red hover */
+  text-shadow: 0 0 8px #ff4d4d;
+}
+
+/* Main content */
+main {
+  flex: 1; /* This pushes the footer to the very bottom */
+  padding: 120px 20px 40px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  z-index: 10; /* Ensures text is above the images */
+}
+
+/* Fade-in animation */
+@keyframes fadeIn { to { opacity: 1; } }
+
+.maintxt {
+  color: #ffffff; 
+  margin: 15px 0;
+  font-family: monospace;
+  font-weight: 500;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8); /* This is the secret to readability */
+}
+
+.maintxtb {
+  color: #007bff;
+  margin: 0 5px;
+  padding: 4px 8px;
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 1rem;
+  background: rgba(0,123,255,0.05);
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.maintxtb:hover {
+  color: #0056b3;
+  border-color: #0056b3;
+  background: rgba(0,123,255,0.15);
+  text-decoration: none;
+}
+
+/* Footer */
+footer {
+  background: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+  color: #fff;
+  text-align: center;
+  padding: 20px 10px;
+  width: 100%;
+  border-top: 1px solid #444;
+  z-index: 10;
+}
+
+footer a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  margin: 0 4px;
+  transition: color 0.3s;
+}
+
+footer a:hover { color: #0056b3; }
+
+/* Full-page background images */
+.bg-img {
+  position: fixed;
+  top: -5%; /* Slightly larger than screen to hide edges during zoom */
+  left: -5%;
+  width: 110%;
+  height: 110%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+  /* Add the animation here */
+  animation: slowZoom 20s infinite alternate ease-in-out;
+  z-index: -2;
+}
+
+@keyframes slowZoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.15); }
+}
+
+/* Overlay for readability */
+.bg-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Center is slightly dark (0.3), edges are very dark (0.8) */
+  background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+  z-index: -1;
+  pointer-events: none; /* Allows you to click things 'through' the overlay */
+}
