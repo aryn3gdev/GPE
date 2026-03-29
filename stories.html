@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GPE - Archive Feed</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Tag Styling */
+    .tag {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        margin-right: 5px;
+        background: #333;
+        color: #fff;
+        border: 1px solid #444;
+    }
+    .tag-sighting { border-color: #ff4d4d; color: #ff4d4d; }
+    .tag-audio { border-color: #4da6ff; color: #4da6ff; }
+
+    /* The "Expandable" Story */
+    details {
+        background: rgba(20, 20, 20, 0.9);
+        border: 1px solid #333;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        transition: 0.3s;
+        padding: 15px;
+    }
+    
+    details[open] { border-color: #ff4d4d; }
+
+    summary {
+        list-style: none; /* Hide default arrow */
+        cursor: pointer;
+        outline: none;
+    }
+
+    /* Custom Arrow/Indicator */
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+        content: ' [+]';
+        color: #ff4d4d;
+        font-family: monospace;
+    }
+    details[open] summary::after { content: ' [-]'; }
+
+    .post-preview {
+        display: inline;
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .full-content {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px dashed #444;
+        line-height: 1.6;
+        color: #ccc;
+        white-space: pre-wrap;
+    }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-content">
+      <h1 data-text="ARCHIVE FEED">ARCHIVE FEED</h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="map.html">Map</a>
+        <a href="submit.html">Submit</a>
+      </nav>
+    </div>
+  </div>
+
+  <main class="feed-container" id="storyFeed">
+    <div class="loading-text">DECRYPTING ARCHIVES...</div>
+  </main>
+
+  <div class="bg-overlay"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script>
+    // Ensure this link has the correct &gid= for Sheet2!
+    const STORIES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyMPHXuXj03ftC9obiEjfCksV2-Y0epwJb2Qz3intyF3YKSzvZdY3DihhTZo5CJlnDQHQtzW03e59O/pub?gid=1984852591&output=csv';
+    const MOD_LIST = ['Admin_Daddy', 'Mod_GPE'];
+
+    function loadStories() {
+        Papa.parse(STORIES_CSV, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                const container = document.getElementById('storyFeed');
+                container.innerHTML = '';
+
+                results.data.reverse().forEach(row => {
+                    const title = row.title || row.Title;
+                    const content = row.content || row.Content;
+                    const author = row.author || 'Anonymous';
+                    const tagsRaw = row.tags || row.Tags || '';
+                    
+                    if (title && content) {
+                        // Create Tag HTML
+                        const tagsHtml = tagsRaw.split(',').map(tag => {
+                            const t = tag.trim().toLowerCase();
+                            return `<span class="tag tag-${t}">${tag.trim()}</span>`;
+                        }).join('');
+
+                        // Get a snippet of the story (first 60 characters)
+                        const preview = content.substring(0, 60) + "...";
+
+                        const postHtml = `
+                            <details id="post-${Math.random()}">
+                                <summary>
+                                    <div class="post-meta">
+                                        ${tagsHtml}
+                                        Posted by u/${author} ${MOD_LIST.includes(author) ? '<span class="mod-badge">MOD</span>' : ''}
+                                    </div>
+                                    <div class="post-title">${title.toUpperCase()}</div>
+                                    <span class="post-preview">${preview}</span>
+                                </summary>
+                                <div class="full-content">
+                                    ${content}
+                                </div>
+                            </details>
+                        `;
+                        container.innerHTML += postHtml;
+                    }
+                });
+            }
+        });
+    }
+    loadStories();
+</script>
+</body>
+</html>
