@@ -4,132 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Submit - Great Park Explorations</title>
-  <link rel="stylesheet" href="style.css">
   <style>
-    :root {
-      --accent: #ff4d4d;
-      --glass: rgba(0, 0, 0, 0.75);
-      --border: rgba(255, 255, 255, 0.1);
-    }
-
-    body {
-      background-color: #0a0a0a;
-      color: #eee;
-      font-family: 'Roboto', sans-serif;
-    }
-
-    .submit-card {
-      background: var(--glass);
-      backdrop-filter: blur(15px);
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      padding: 40px;
-      margin: 40px auto;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-      max-width: 600px;
-      animation: slideUp 0.8s ease-out;
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    h2 {
-      font-family: monospace;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      margin-bottom: 25px;
-      color: var(--accent);
-      text-align: center;
-    }
-
-    .input-group {
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    label {
-      font-family: monospace;
-      font-size: 0.8rem;
-      margin-bottom: 8px;
-      color: #888;
-      text-transform: uppercase;
-    }
-
-    input, textarea, select {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      padding: 12px;
-      color: #fff;
-      border-radius: 5px;
-      transition: all 0.3s;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      outline: none;
-      border-color: var(--accent);
-      background: rgba(255,255,255,0.1);
-    }
-
+    :root { --accent: #ff4d4d; --glass: rgba(0, 0, 0, 0.75); --border: rgba(255, 255, 255, 0.1); }
+    body { background-color: #0a0a0a; color: #eee; font-family: 'Roboto', sans-serif; margin: 0; }
+    .submit-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 15px; padding: 40px; margin: 40px auto; max-width: 600px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+    h2 { font-family: monospace; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); text-align: center; }
+    .input-group { margin-bottom: 20px; display: flex; flex-direction: column; }
+    label { font-family: monospace; font-size: 0.8rem; margin-bottom: 8px; color: #888; text-transform: uppercase; }
+    input, textarea, select { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; color: #fff; border-radius: 5px; }
     .hidden { display: none; }
-
-    .submit-btn {
-      width: 100%;
-      padding: 15px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      font-family: monospace;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s;
-      margin-top: 10px;
-      letter-spacing: 2px;
-    }
-
-    .submit-btn:hover:not(:disabled) {
-      background: #b33636;
-      box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
-    }
-
-    .submit-btn:disabled {
-      background: #444;
-      cursor: not-allowed;
-    }
-
-    .status-msg {
-      text-align: center;
-      margin-top: 15px;
-      font-family: monospace;
-      font-size: 0.9rem;
-    }
-
-    .warning {
-      font-size: 0.75rem;
-      color: #666;
-      text-align: center;
-      margin-top: 20px;
-      line-height: 1.4;
-    }
+    .submit-btn { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; letter-spacing: 2px; }
+    .submit-btn:disabled { background: #444; cursor: not-allowed; }
+    .status-msg { text-align: center; margin-top: 15px; font-family: monospace; }
+    .warning { font-size: 0.75rem; color: #666; text-align: center; margin-top: 20px; }
   </style>
 </head>
 <body>
 
-  <div class="topbar">
-    <div class="topbar-content">
-      <h1 data-text="GPE SUBMIT">GPE SUBMIT</h1>
-      <nav><a href="index.html">Home</a></nav>
-    </div>
-  </div>
-
-  <main>
+  <main style="padding: 20px;">
     <section class="submit-card">
       <h2>Transmission</h2>
-      
       <div class="input-group">
         <label>Classification</label>
         <select id="subType" onchange="updateForm()">
@@ -141,117 +35,58 @@
 
       <form id="mainForm">
         <div id="storyFields" class="hidden">
-          <div class="input-group">
-            <label>The Encounter (Required)</label>
-            <textarea id="s_content" placeholder="Describe what you saw..." rows="6"></textarea>
-          </div>
-          <div class="input-group">
-            <label>General Area (Optional)</label>
-            <input type="text" id="s_loc" placeholder="e.g. Near the old bridge">
-          </div>
-          <div class="input-group">
-            <label>Contact/Phone (Optional)</label>
-            <input type="tel" id="s_phone" placeholder="Only if you want a follow-up">
-          </div>
+          <div class="input-group"><label>The Encounter</label><textarea id="s_content" rows="6"></textarea></div>
+          <div class="input-group"><label>General Area</label><input type="text" id="s_loc"></div>
+          <div class="input-group"><label>Contact/Phone</label><input type="tel" id="s_phone"></div>
         </div>
-
         <div id="locFields" class="hidden">
-          <div class="input-group">
-            <label>Location Name (Required)</label>
-            <input type="text" id="l_title" placeholder="e.g. The Screaming Path">
-          </div>
-          <div class="input-group">
-            <label>Why is it unsettling? (Optional)</label>
-            <textarea id="l_desc" placeholder="History or feeling of the area..." rows="4"></textarea>
-          </div>
+          <div class="input-group"><label>Location Name</label><input type="text" id="l_title"></div>
+          <div class="input-group"><label>Why is it unsettling?</label><textarea id="l_desc" rows="4"></textarea></div>
         </div>
-
         <button type="button" id="sendBtn" class="submit-btn" onclick="submitToDiscord()">INITIATE UPLOAD</button>
         <div id="status" class="status-msg"></div>
-        
-        <p class="warning">
-          IP LOGGING ACTIVE. SUBMITTING DISTURBING CONTENT MAY RESULT IN A PERMANENT BAN FROM GPE SERVERS.
-        </p>
+        <p class="warning">IP LOGGING ACTIVE. UNAUTHORIZED ACCESS PROHIBITED.</p>
       </form>
     </section>
   </main>
 
   <script>
-    // --- CONFIGURATION ---
-    // This string is cleaned automatically by the code below
-    const _0x_raw_data = `
-      aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ4Nzg0NDQ3ODYyOTk3MDE1NC9SdEVTWnk1aXljY3lkclRnNVVET2tsRXFrMmo4OFE_bWl2TTkyYWVlTUJiVUJWUWplTGtCbmJmemRFNFNpY2hzUV9QMA==
-    `;
-    
-    const BANNED_IPS = []; 
+    // Clean string with no internal spaces
+    const _D_U = 'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ4Nzg0NDQ3ODYyOTk3MDE1NC9SdEVTWnk1aXljY3lkclRnNVVET2tsRXFrMmo4OFE_bWl2TTkyYWVlTUJiVUJWUWplTGtCbmJmemRFNFNpY2hzUV9QMA==';
 
     function updateForm() {
-      const type = document.getElementById('subType').value;
-      document.getElementById('storyFields').classList.toggle('hidden', type !== 'story');
-      document.getElementById('locFields').classList.toggle('hidden', type !== 'location');
+      const t = document.getElementById('subType').value;
+      document.getElementById('storyFields').classList.toggle('hidden', t !== 'story');
+      document.getElementById('locFields').classList.toggle('hidden', t !== 'location');
     }
 
     async function submitToDiscord() {
       const type = document.getElementById('subType').value;
       const btn = document.getElementById('sendBtn');
       const status = document.getElementById('status');
-
-      if (!type) {
-        status.innerHTML = "<span style='color:orange'>Please select a classification.</span>";
-        return;
-      }
+      if (!type) { status.innerText = "Select classification."; return; }
 
       btn.disabled = true;
-      btn.innerText = "UPLOADING...";
-      status.innerText = "Connecting to GPE Terminal...";
+      status.innerText = "Transmitting...";
 
       try {
-        // 1. Get IP
-        const ipReq = await fetch('https://api.ipify.org?format=json');
-        const ipRes = await ipReq.json();
+        const ipRes = await fetch('https://api.ipify.org?format=json').then(r => r.json());
         const userIP = ipRes.ip;
 
-        if (BANNED_IPS.includes(userIP)) {
-          status.innerHTML = "<span style='color:red'>ACCESS DENIED. IP BLACKLISTED.</span>";
-          btn.innerText = "BANNED";
-          return;
-        }
-
-        // 2. Build Payload
-        let fields = [{ name: "UPLOADER IP", value: `\`${userIP}\``, inline: false }];
-
+        let fields = [{ name: "UPLOADER IP", value: userIP }];
         if (type === 'story') {
-          const content = document.getElementById('s_content').value;
-          if(!content) throw "Story is empty";
-          fields.push(
-            { name: "STORY", value: content },
-            { name: "AREA", value: document.getElementById('s_loc').value || "Unknown" },
-            { name: "PHONE", value: document.getElementById('s_phone').value || "Not provided" }
-          );
+          fields.push({ name: "STORY", value: document.getElementById('s_content').value || "Empty" });
         } else {
-          const title = document.getElementById('l_title').value;
-          if(!title) throw "Location title empty";
-          fields.push(
-            { name: "LOC NAME", value: title },
-            { name: "DESC", value: document.getElementById('l_desc').value || "No description" }
-          );
+          fields.push({ name: "LOC", value: document.getElementById('l_title').value || "Empty" });
         }
 
         const payload = {
           username: "GPE Terminal",
-          avatar_url: "https://i.imgur.com/R8M5S70.png",
-          embeds: [{
-            title: `NEW DATA PACKET: ${type.toUpperCase()}`,
-            color: type === 'story' ? 15548997 : 3447003,
-            fields: fields,
-            timestamp: new Date()
-          }]
+          embeds: [{ title: `NEW PACKET: ${type.toUpperCase()}`, fields: fields, color: 15548997 }]
         };
 
-        // 3. Clean and Decode the Webhook URL
-        // This removes any accidental spaces or newlines from the Base64 string
-        const cleanBase64 = _0x_raw_data.replace(/\s/g, '');
-        const target = atob(cleanBase64);
+        // Decoding with a regex that wipes all whitespace including non-breaking spaces
+        const target = atob(_D_U.replace(/[\s\uFEFF\xA0]/g, ''));
 
         const response = await fetch(target, {
           method: 'POST',
@@ -260,18 +95,14 @@
         });
 
         if (response.ok) {
-          status.innerHTML = "<span style='color:#00ff00'>UPLOAD SUCCESSFUL.</span>";
-          document.getElementById('mainForm').reset();
-          setTimeout(() => { location.reload(); }, 2500);
+          status.innerHTML = "UPLOAD SUCCESSFUL.";
+          setTimeout(() => location.reload(), 2000);
         } else {
-          throw "Transmission Failed";
+          throw "Server rejected packet.";
         }
-
       } catch (err) {
-        console.error("GPE Error:", err);
-        status.innerHTML = `<span style='color:red'>ERROR: ${err}</span>`;
+        status.innerText = "ERROR: " + err;
         btn.disabled = false;
-        btn.innerText = "RETRY UPLOAD";
       }
     }
   </script>
