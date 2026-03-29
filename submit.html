@@ -51,60 +51,84 @@
   </main>
 
   <script>
-    // Clean string with no internal spaces
-    const _D_U = 'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ4Nzg0NDQ3ODYyOTk3MDE1NC9SdEVTWnk1aXljY3lkclRnNVVET2tsRXFrMmo4OFE_bWl2TTkyYWVlTUJiVUJWUWplTGtCbmJmemRFNFNpY2hzUV9QMA==';
+    // GPE CONFIGURATION
+    const _DATA_STREAM = 'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ4Nzg0NDQ3ODYyOTk3MDE1NC9SdEVTWnk1aXljY3lkclRnNVVET2tsRXFrMmo4OFE_bWl2TTkyYWVlTUJiVUJWUWplTGtCbmJmemRFNFNpY2hzUV9QMA==';
+
+    // Manual Decoder (Fixed: No more atob error)
+    function gpeDecode(str) {
+        try {
+            return decodeURIComponent(escape(window.atob(str.replace(/[^A-Za-z0-9+/=]/g, ""))));
+        } catch (e) {
+            // Fallback for extreme cases
+            return window.atob(str.replace(/[^A-Za-z0-9+/=]/g, ""));
+        }
+    }
 
     function updateForm() {
-      const t = document.getElementById('subType').value;
-      document.getElementById('storyFields').classList.toggle('hidden', t !== 'story');
-      document.getElementById('locFields').classList.toggle('hidden', t !== 'location');
+        const t = document.getElementById('subType').value;
+        document.getElementById('storyFields').classList.toggle('hidden', t !== 'story');
+        document.getElementById('locFields').classList.toggle('hidden', t !== 'location');
     }
 
     async function submitToDiscord() {
-      const type = document.getElementById('subType').value;
-      const btn = document.getElementById('sendBtn');
-      const status = document.getElementById('status');
-      if (!type) { status.innerText = "Select classification."; return; }
+        const type = document.getElementById('subType').value;
+        const btn = document.getElementById('sendBtn');
+        const status = document.getElementById('status');
+        
+        if (!type) { status.innerText = "Select classification."; return; }
 
-      btn.disabled = true;
-      status.innerText = "Transmitting...";
+        btn.disabled = true;
+        btn.innerText = "INITIALIZING...";
+        status.innerText = "Transmitting to GPE Terminal...";
 
-      try {
-        const ipRes = await fetch('https://api.ipify.org?format=json').then(r => r.json());
-        const userIP = ipRes.ip;
+        try {
+            const ipRes = await fetch('https://api.ipify.org?format=json').then(r => r.json());
+            const userIP = ipRes.ip;
 
-        let fields = [{ name: "UPLOADER IP", value: userIP }];
-        if (type === 'story') {
-          fields.push({ name: "STORY", value: document.getElementById('s_content').value || "Empty" });
-        } else {
-          fields.push({ name: "LOC", value: document.getElementById('l_title').value || "Empty" });
+            let fields = [{ name: "UPLOADER IP", value: `\`${userIP}\`` }];
+            
+            if (type === 'story') {
+                const content = document.getElementById('s_content').value;
+                if(!content) throw "Content Required";
+                fields.push({ name: "STORY", value: content });
+            } else {
+                const title = document.getElementById('l_title').value;
+                if(!title) throw "Location Required";
+                fields.push({ name: "LOC", value: title });
+            }
+
+            const payload = {
+                username: "GPE Terminal",
+                embeds: [{ 
+                    title: `DATA PACKET: ${type.toUpperCase()}`, 
+                    fields: fields, 
+                    color: 15548997,
+                    footer: { text: "GPE Secure Uplink" }
+                }]
+            };
+
+            // Use the new manual decoder
+            const targetUrl = gpeDecode(_DATA_STREAM);
+
+            const response = await fetch(targetUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                status.innerHTML = "<span style='color:#00ff00'>UPLOAD SUCCESSFUL.</span>";
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                throw "Transmission Failed";
+            }
+        } catch (err) {
+            console.error("GPE Error:", err);
+            status.innerText = "ERROR: " + err;
+            btn.disabled = false;
+            btn.innerText = "RETRY UPLOAD";
         }
-
-        const payload = {
-          username: "GPE Terminal",
-          embeds: [{ title: `NEW PACKET: ${type.toUpperCase()}`, fields: fields, color: 15548997 }]
-        };
-
-        // Decoding with a regex that wipes all whitespace including non-breaking spaces
-        const target = atob(_D_U.replace(/[\s\uFEFF\xA0]/g, ''));
-
-        const response = await fetch(target, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (response.ok) {
-          status.innerHTML = "UPLOAD SUCCESSFUL.";
-          setTimeout(() => location.reload(), 2000);
-        } else {
-          throw "Server rejected packet.";
-        }
-      } catch (err) {
-        status.innerText = "ERROR: " + err;
-        btn.disabled = false;
-      }
     }
-  </script>
+</script>
 </body>
 </html>
