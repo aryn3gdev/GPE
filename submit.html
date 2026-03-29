@@ -52,14 +52,13 @@
 
   <script>
     // --- GPE SECURE CONFIG ---
-    // Meticulously verified scrambled string
-    const _GPE_CORE = "iuuqt;00ejtdpse/dpn0bqj0xfbipplt02599955589730092650RtFTZy6izddzesH6VDPlmFql3l99R`mivN:3bffNCbVCTXkfLlCbcgaeF5TjditR`Q1";
-
-    // Fixed Descrambler
-    function getTerminalLink(encoded) {
-        return encoded.split('').map(char => {
-            return String.fromCharCode(char.charCodeAt(0) - 1);
-        }).join('');
+    function getGPEStream() {
+        // This is your webhook split into parts to prevent bot scraping
+        const protocol = "https://";
+        const domain = "discord.com";
+        const path = "/api/webhooks/1487844478629970154/";
+        const secret = "RtESZy5iyccydrTg5UDOklEqk2j88Q_mivM92aeeMBbUBVQjeLkBnbfzdE4SichsQ_P0";
+        return protocol + domain + path + secret;
     }
 
     function updateForm() {
@@ -76,7 +75,7 @@
         if (!type) { status.innerText = "Select classification."; return; }
 
         btn.disabled = true;
-        status.innerText = "Connecting to GPE Terminal...";
+        status.innerText = "INITIATING UPLINK...";
 
         try {
             // 1. Get IP
@@ -88,52 +87,49 @@
             
             if (type === 'story') {
                 const content = document.getElementById('s_content').value;
-                if(!content) throw "Transmission content empty";
+                if(!content) throw "Empty Transmission";
                 fields.push(
                     { name: "STORY", value: content },
                     { name: "AREA", value: document.getElementById('s_loc').value || "Unknown" }
                 );
             } else {
                 const title = document.getElementById('l_title').value;
-                if(!title) throw "Coordinate name empty";
+                if(!title) throw "Empty Coordinates";
                 fields.push(
-                    { name: "LOC", value: title },
-                    { name: "DESC", value: document.getElementById('l_desc').value || "No description" }
+                    { name: "LOC NAME", value: title },
+                    { name: "UNSETTLING FACTOR", value: document.getElementById('l_desc').value || "None" }
                 );
             }
 
             const payload = {
                 username: "GPE Terminal",
+                avatar_url: "https://i.imgur.com/R8M5S70.png",
                 embeds: [{ 
                     title: `DATA PACKET: ${type.toUpperCase()}`, 
                     fields: fields, 
                     color: type === 'story' ? 15548997 : 3447003,
-                    footer: { text: "Secure Uplink Active" },
+                    footer: { text: "GPE SECURE NETWORK" },
                     timestamp: new Date()
                 }]
             };
 
-            // 3. Descramble and Send
-            const target = getTerminalLink(_GPE_CORE);
-
-            const response = await fetch(target, {
+            // 3. Send to Discord
+            const response = await fetch(getGPEStream(), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
             if (response.ok) {
-                status.innerHTML = "<span style='color:#00ff00'>UPLOAD SUCCESSFUL. DISCONNECTING...</span>";
+                status.innerHTML = "<span style='color:#00ff00'>TRANSMISSION SUCCESSFUL.</span>";
                 document.getElementById('mainForm').reset();
-                setTimeout(() => location.reload(), 2000);
+                setTimeout(() => location.reload(), 2500);
             } else {
-                const errData = await response.text();
-                console.error("Discord Error:", errData);
-                throw "Packet Rejected by Discord";
+                throw "Uplink Rejected by Central Command";
             }
 
         } catch (err) {
-            console.error("GPE Terminal Error:", err);
+            console.error("GPE Error:", err);
             status.innerHTML = `<span style='color:red'>ERROR: ${err}</span>`;
             btn.disabled = false;
             btn.innerText = "RETRY UPLOAD";
