@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map - Great Park Explorations</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <style>
+    #map {
+  height: 75vh;
+  width: 100%;
+  margin-top: 20px;
+  border: 2px solid #ff4d4d;
+  border-radius: 8px;
+  background: #000;
+  /* Cleaner dark mode: Subtle blue-grey tint */
+  filter: brightness(0.8) invert(100%) hue-rotate(180deg) saturate(0.5);
+}
+
+/* Make the popups readable (White background, black text) */
+.leaflet-popup-content-wrapper {
+  background: #fff !important;
+  color: #000 !important;
+  border-radius: 0px;
+  font-family: monospace;
+}
+
+    .map-card {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 40px;
+    }
+
+    .status-bar {
+      font-family: monospace;
+      color: #ff4d4d;
+      font-size: 0.8rem;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Pulse effect for the markers */
+    .leaflet-marker-icon.pulse {
+      background: #ff4d4d;
+      border-radius: 50%;
+      box-shadow: 0 0 0 rgba(255, 77, 77, 0.4);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(255, 77, 77, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-content">
+      <h1 data-text="SATELLITE FEED">SATELLITE FEED</h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="submit.html">Submit</a>
+      </nav>
+    </div>
+  </div>
+
+  <main style="max-width: 1200px;">
+    <div class="map-card">
+      <div class="status-bar">● LIVE SIGNAL: NEWCASTLE GREAT PARK</div>
+      <div id="map"></div>
+      <p class="maintxt" style="font-size: 0.8rem; margin-top: 15px; color: #666;">
+        COORDINATES VERIFIED BY COMMUNITY SUBMISSIONS. EXPLORE AT YOUR OWN RISK.
+      </p>
+    </div>
+  </main>
+
+  <div class="bg-overlay"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+  <script>
+    // 1. Your verified CSV link
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyMPHXuXj03ftC9obiEjfCksV2-Y0epwJb2Qz3intyF3YKSzvZdY3DihhTZo5CJlnDQHQtzW03e59O/pub?output=csv'; 
+
+// 2. Initialize Map (Centered on the Park)
+const map = L.map('map').setView([55.0300, -1.6445], 14);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+function loadIntel() {
+    console.log("GPE Satellite: Initializing Scan...");
+
+    Papa.parse(SHEET_URL, {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+            console.log("Total rows detected in sheet:", results.data.length);
+            
+            // This clears any old markers before drawing new ones
+            results.data.forEach((row, index) => {
+                const lat = parseFloat(row.lat || row.Lat);
+                const lng = parseFloat(row.lng || row.Lng);
+                const name = row.name || row.Name || "Unknown Signal";
+                const desc = row.description || row.Description || "";
+
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    console.log(`Mapping waypoint ${index + 1}: ${name}`);
+                    
+                    L.circleMarker([lat, lng], {
+                        radius: 8,
+                        fillColor: "#ff4d4d",
+                        color: "#fff",
+                        weight: 2,
+                        fillOpacity: 0.8
+                    }).addTo(map).bindPopup(`
+                        <div style="color:#000; font-family:monospace;">
+                            <b style="color:#ff4d4d">${name.toUpperCase()}</b><br>
+                            <hr style="border:0; border-top:1px solid #eee; margin:5px 0;">
+                            ${desc}
+                        </div>
+                    `);
+                } else {
+                    console.warn(`Row ${index + 1} has invalid coordinates:`, row);
+                }
+            });
+        }
+    });
+}
+
+loadIntel();
+  </script>
+</body>
+</html>
